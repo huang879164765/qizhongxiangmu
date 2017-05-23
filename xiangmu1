@@ -1,0 +1,64 @@
+print ('期中项目')
+#coding:'cp936'
+resource = [] #原始成绩
+average = [] #含总分，平均分的成绩
+rank = [] #含有名次的成绩
+#读取源文件
+with open('report.txt') as fin:
+	report1 = fin.readlines()
+	for i in report1:
+		a = i.strip()
+		resource.append(a)
+
+#计算总分及平均分
+for j in report1:
+	lst1 = j.split(' ')
+	sum = 0
+	ave = 0
+	for k in lst1[1:]:
+		sum += int(k)
+	ave = sum/float(len(lst1[1:]))
+	lst1.append(str(sum))
+	lst1.append(str(ave)[:4])
+	average.append(lst1)
+
+#给总分和平均分排序
+rank = sorted(average,key=lambda x:float(x[-1]),reverse=True)
+
+#计算每科科目平均成绩
+average_subject = ['平均',0,0,0,0,0,0,0,0,0,0,0]
+for k in rank:
+	for l in range(1,12):
+		if l < 11:
+			average_subject[l] += int(k[l])
+		else:
+			average_subject[l] += float(k[l])
+m = 0
+for l in average_subject[1:]:
+	m += 1
+	average_subject[m] = str(float(l)/len(rank))[:5]
+rank.insert(0, average_subject)
+
+#添加名次，并将每科目添加至首行
+for n in range(len(rank)):
+	rank[n].insert(0, str(n))
+subjects = ['名次','姓名','语文','数学','英语','物理','化学','生物','政治','历史','地理','总分','平均分']
+rank.insert(0, subjects)
+
+#替换60分为不及格
+for g in rank[2:]:
+	for h in range(2,13):
+		if h < 12:
+			if int(g[h]) < 60:
+				g[h] = '不及格'
+			else:
+				if float(g[h]) < 60:
+					g[h] = '不及格'
+
+#新数据写到新的report文件中
+with open('new_report.txt', 'w') as fout:
+	for p in rank:
+		q = '\t'.join(p)
+		fout.write(q + '\n')
+
+
